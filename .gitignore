@@ -1,5 +1,12 @@
+data/
+misc/
+misc_nb/
+figs/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
+src/ggner/__pycache__/
 *.py[codz]
 *$py.class
 
