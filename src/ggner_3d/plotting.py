@@ -80,6 +80,29 @@ def despine(ax):
 COLORS = ['#465775', '#A63446', '#F5B841', '#9DBBAE']
 
 
+def _smooth_1d(y, window=None, sigma=None):
+    y = np.asarray(y, dtype=float)
+    if (window is None or window <= 1) and (sigma is None or sigma <= 0):
+        return y
+
+    nanmask = np.isnan(y)
+    v = np.where(nanmask, 0.0, y)
+    w = np.where(nanmask, 0.0, 1.0)
+
+    if sigma is not None and sigma > 0:
+        rad = int(np.ceil(3 * sigma))
+        xk = np.arange(-rad, rad + 1)
+        k = np.exp(-(xk**2) / (2 * sigma**2))
+        k = k / k.sum()
+    else:
+        window = int(max(2, window))
+        k = np.ones(window, dtype=float) / window
+
+    v_s = np.convolve(v, k, mode="same")
+    w_s = np.convolve(w, k, mode="same")
+    return v_s / np.where(w_s == 0, np.nan, w_s)
+
+
 def saddleplot(
     track,
     saddledata,
@@ -523,28 +546,6 @@ def plot_flanks_start_end_stackup(
         r, g, b, _ = to_rgba(color)
         return (r, g, b)
 
-    def _smooth_1d(y, window=None, sigma=None):
-        y = np.asarray(y, dtype=float)
-        if (window is None or window <= 1) and (sigma is None or sigma <= 0):
-            return y
-
-        nanmask = np.isnan(y)
-        v = np.where(nanmask, 0.0, y)
-        w = np.where(nanmask, 0.0, 1.0)
-
-        if sigma is not None and sigma > 0:
-            rad = int(np.ceil(3 * sigma))
-            xk = np.arange(-rad, rad + 1)
-            k = np.exp(-(xk**2) / (2 * sigma**2))
-            k = k / k.sum()
-        else:
-            window = int(max(2, window))
-            k = np.ones(window, dtype=float) / window
-
-        v_s = np.convolve(v, k, mode="same")
-        w_s = np.convolve(w, k, mode="same")
-        return v_s / np.where(w_s == 0, np.nan, w_s)
-
     def _get_color_map(keys, palette):
         if palette is None:
             return {k: None for k in keys}
@@ -920,24 +921,35 @@ def lineplot_stackup_dict(
     x=None,
     agg="mean",          # "mean" or "median"
     err="sem",           # "sem", "sd", "ci95", or None
-    err_axis=0,          # axis to compute error over (0 = rows/regions if v is 2D)
-    alpha=0.2,           # fill_between alpha
-    labels=None,         # optional mapping: key -> label
-    plot_kwargs=None,    # forwarded to ax.plot
-    fill_kwargs=None,    # forwarded to ax.fill_between
+    err_axis=0,          # axis to compute error over
+    alpha=0.2,
+    labels=None,
+    plot_kwargs=None,
+    fill_kwargs=None,
     structure_type="TAD",
-    colors=None,         # mapping key->color OR list/tuple of colors OR single color
+    colors=None,
     legend_title=None,
     y_title=None,
-    despine_fn=None,     # e.g., seaborn.despine or your plotting.despine
+    despine_fn=None,
+    flank_ratio=0.25,    # flank_size / body_size
+    smooth_window=None,  # int (bins), moving average
+    smooth_sigma=None,   # float (bins), gaussian sigma
 ):
     """
     Plot 1D profiles from a dict of stackups.
+
     Values can be:
       - 1D: shape (nbins,)
       - 2D: shape (n, nbins) -> aggregates over err_axis to produce center + error band
 
-    Shaded band defaults to the same color as the line unless overridden via fill_kwargs.
+    flank_ratio defines the flank size relative to the central structure body.
+    For example, flank_ratio=0.25 means:
+        left flank : body : right flank = 0.25 : 1 : 0.25
+
+    smooth_window applies a NaN-aware moving average to the plotted center
+    and error band. smooth_sigma applies Gaussian smoothing in bins and takes
+    precedence when both smoothing options are provided.
+
     Returns: ax
     """
     if ax is None:
@@ -948,29 +960,64 @@ def lineplot_stackup_dict(
 
     items = list(stackup_dict.items())
 
+    # infer nbins from first entry
+    first_arr = np.asarray(items[0][1])
+    nbins = first_arr.shape[-1]
+
+    if x is None:
+        xx_default = np.arange(nbins)
+
+        body_bins = nbins / (1 + 2 * flank_ratio)
+        flank_bins = flank_ratio * body_bins
+
+        left_boundary = flank_bins
+        center_position = flank_bins + body_bins / 2
+        right_boundary = flank_bins + body_bins
+    else:
+        xx_default = np.asarray(x)
+
+        if xx_default.shape[0] != nbins:
+            raise ValueError(f"x has length {xx_default.shape[0]} but expected {nbins}")
+
+        body_bins = nbins / (1 + 2 * flank_ratio)
+        flank_bins = flank_ratio * body_bins
+
+        left_idx = flank_bins
+        center_idx = flank_bins + body_bins / 2
+        right_idx = flank_bins + body_bins
+
+        left_boundary = np.interp(left_idx, np.arange(nbins), xx_default)
+        center_position = np.interp(center_idx, np.arange(nbins), xx_default)
+        right_boundary = np.interp(right_idx, np.arange(nbins), xx_default)
+
     for i, (k, v) in enumerate(items):
         arr = np.asarray(v)
 
         # pick color for this series
         if colors is None:
-            current_color = plot_kwargs.get("color", None)  # let mpl cycle if None
+            current_color = plot_kwargs.get("color", None)
         elif isinstance(colors, dict):
             current_color = colors.get(k, plot_kwargs.get("color", None))
         elif isinstance(colors, (list, tuple)):
             current_color = colors[i % len(colors)]
         else:
-            current_color = colors  # single color string
+            current_color = colors
 
         # x
-        nbins = arr.shape[-1]
-        xx = np.arange(nbins) if x is None else np.asarray(x)
-        if xx.shape[0] != nbins:
-            raise ValueError(f"x has length {xx.shape[0]} but expected {nbins} for key={k}")
+        this_nbins = arr.shape[-1]
+        if this_nbins != nbins:
+            raise ValueError(
+                f"All entries must have the same nbins. "
+                f"Expected {nbins}, got {this_nbins} for key={k}"
+            )
+
+        xx = xx_default
 
         # center + band
         if arr.ndim == 1:
             center = arr
             band = None
+
         elif arr.ndim == 2:
             if agg == "mean":
                 center = np.nanmean(arr, axis=err_axis)
@@ -992,8 +1039,18 @@ def lineplot_stackup_dict(
                     band = sem if err == "sem" else 1.96 * sem
                 else:
                     raise ValueError("err must be one of: None, 'sem', 'sd', 'ci95'")
+
         else:
             raise ValueError(f"Value for key={k} must be 1D or 2D, got shape {arr.shape}")
+
+        if smooth_sigma is not None and smooth_sigma > 0:
+            center = _smooth_1d(center, sigma=smooth_sigma)
+            if band is not None:
+                band = _smooth_1d(band, sigma=smooth_sigma)
+        elif smooth_window is not None and smooth_window > 1:
+            center = _smooth_1d(center, window=smooth_window)
+            if band is not None:
+                band = _smooth_1d(band, window=smooth_window)
 
         # label
         if isinstance(labels, dict):
@@ -1003,14 +1060,14 @@ def lineplot_stackup_dict(
         else:
             label = labels
 
-        # plot line (capture actual line color if we let mpl cycle)
+        # plot line
         (line,) = ax.plot(xx, center, label=label, color=current_color, **plot_kwargs)
         line_color = line.get_color()
 
-        # band defaults to line color unless fill_kwargs overrides
+        # error band
         if band is not None:
             fb_kwargs = dict(fill_kwargs)
-            fb_kwargs.setdefault("color", line_color)   # default = line color
+            fb_kwargs.setdefault("color", line_color)
             fb_kwargs.setdefault("linewidth", 0)
             ax.fill_between(xx, center - band, center + band, alpha=alpha, **fb_kwargs)
 
@@ -1018,11 +1075,12 @@ def lineplot_stackup_dict(
     if despine_fn is not None:
         despine_fn(ax=ax)
 
-    # guide lines + xticks
-    ax.axvline(25,  color="grey", linestyle="--", linewidth=1.0, alpha=0.7)
-    ax.axvline(125, color="grey", linestyle="--", linewidth=1.0, alpha=0.7)
+    # guide lines + xticks, computed from nbins and flank_ratio
+    ax.axvline(left_boundary,  color="grey", linestyle="--", linewidth=1.0, alpha=0.7)
+    ax.axvline(right_boundary, color="grey", linestyle="--", linewidth=1.0, alpha=0.7)
 
-    ax.set_xticks([25, 75, 125])
+    ax.set_xticks([left_boundary, center_position, right_boundary])
+
     if structure_type == "TAD":
         ax.set_xticklabels(["5' Boundary", "TAD", "3' Boundary"])
     elif structure_type == "Loop":
@@ -1035,5 +1093,158 @@ def lineplot_stackup_dict(
         ax.legend(title=legend_title)
     else:
         ax.legend()
+
+    return ax
+
+def lineplot_stackup_array(
+    stackup_array,
+    ax=None,
+    *,
+    x=None,
+    agg="mean",          # "mean" or "median"
+    err="sem",           # "sem", "sd", "ci95", or None
+    err_axis=0,          # axis to compute error over
+    alpha=0.2,
+    label=None,
+    plot_kwargs=None,
+    fill_kwargs=None,
+    structure_type="TAD",
+    color=None,
+    legend_title=None,
+    y_title=None,
+    despine_fn=None,
+    flank_ratio=0.25,    # flank_size / body_size
+    smooth_window=None,  # int (bins), moving average
+    smooth_sigma=None,   # float (bins), gaussian sigma
+):
+    """
+    Plot a 1D profile from a single stackup array.
+
+    stackup_array can be:
+      - 1D: shape (nbins,)
+      - 2D: shape (n, nbins) -> aggregates over err_axis to produce center + error band
+
+    flank_ratio defines the flank size relative to the central structure body.
+    For example, flank_ratio=0.25 means:
+        left flank : body : right flank = 0.25 : 1 : 0.25
+
+    smooth_window applies a NaN-aware moving average to the plotted center
+    and error band. smooth_sigma applies Gaussian smoothing in bins and takes
+    precedence when both smoothing options are provided.
+
+    Returns: ax
+    """
+    if ax is None:
+        _, ax = plt.subplots()
+
+    plot_kwargs = {} if plot_kwargs is None else dict(plot_kwargs)
+    fill_kwargs = {} if fill_kwargs is None else dict(fill_kwargs)
+
+    arr = np.asarray(stackup_array)
+
+    if arr.ndim not in (1, 2):
+        raise ValueError(f"stackup_array must be 1D or 2D, got shape {arr.shape}")
+
+    nbins = arr.shape[-1]
+
+    if x is None:
+        xx = np.arange(nbins)
+
+        body_bins = nbins / (1 + 2 * flank_ratio)
+        flank_bins = flank_ratio * body_bins
+
+        left_boundary = flank_bins
+        center_position = flank_bins + body_bins / 2
+        right_boundary = flank_bins + body_bins
+
+    else:
+        xx = np.asarray(x)
+
+        if xx.shape[0] != nbins:
+            raise ValueError(f"x has length {xx.shape[0]} but expected {nbins}")
+
+        body_bins = nbins / (1 + 2 * flank_ratio)
+        flank_bins = flank_ratio * body_bins
+
+        left_idx = flank_bins
+        center_idx = flank_bins + body_bins / 2
+        right_idx = flank_bins + body_bins
+
+        left_boundary = np.interp(left_idx, np.arange(nbins), xx)
+        center_position = np.interp(center_idx, np.arange(nbins), xx)
+        right_boundary = np.interp(right_idx, np.arange(nbins), xx)
+
+    # center + band
+    if arr.ndim == 1:
+        center = arr
+        band = None
+
+    else:
+        if agg == "mean":
+            center = np.nanmean(arr, axis=err_axis)
+        elif agg == "median":
+            center = np.nanmedian(arr, axis=err_axis)
+        else:
+            raise ValueError("agg must be 'mean' or 'median'")
+
+        band = None
+        if err is not None:
+            arr2 = np.moveaxis(arr, err_axis, 0) if err_axis != 0 else arr
+
+            if err == "sd":
+                band = np.nanstd(arr2, axis=0, ddof=1)
+            elif err in ("sem", "ci95"):
+                n = np.sum(~np.isnan(arr2), axis=0)
+                sd = np.nanstd(arr2, axis=0, ddof=1)
+                sem = sd / np.sqrt(np.maximum(n, 1))
+                band = sem if err == "sem" else 1.96 * sem
+            else:
+                raise ValueError("err must be one of: None, 'sem', 'sd', 'ci95'")
+
+    # optional smoothing
+    if smooth_sigma is not None and smooth_sigma > 0:
+        center = _smooth_1d(center, sigma=smooth_sigma)
+        if band is not None:
+            band = _smooth_1d(band, sigma=smooth_sigma)
+
+    elif smooth_window is not None and smooth_window > 1:
+        center = _smooth_1d(center, window=smooth_window)
+        if band is not None:
+            band = _smooth_1d(band, window=smooth_window)
+
+    # plot line
+    (line,) = ax.plot(xx, center, label=label, color=color, **plot_kwargs)
+    line_color = line.get_color()
+
+    # error band
+    if band is not None:
+        fb_kwargs = dict(fill_kwargs)
+        fb_kwargs.setdefault("color", line_color)
+        fb_kwargs.setdefault("linewidth", 0)
+        ax.fill_between(xx, center - band, center + band, alpha=alpha, **fb_kwargs)
+
+    # optional despine
+    if despine_fn is not None:
+        despine_fn(ax=ax)
+
+    # guide lines + xticks
+    ax.axvline(left_boundary,  color="grey", linestyle="--", linewidth=1.0, alpha=0.7)
+    ax.axvline(right_boundary, color="grey", linestyle="--", linewidth=1.0, alpha=0.7)
+
+    ax.set_xticks([left_boundary, center_position, right_boundary])
+
+    if structure_type == "TAD":
+        ax.set_xticklabels(["5' Boundary", "TAD", "3' Boundary"])
+    elif structure_type == "Loop":
+        ax.set_xticklabels(["5' Anchor", "Loop", "3' Anchor"])
+
+    if y_title is not None:
+        ax.set_ylabel(y_title)
+
+    if label is not None:
+        if legend_title is not None:
+            ax.legend(title=legend_title)
+        else:
+            ax.legend()
 
     return ax

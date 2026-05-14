@@ -30,6 +30,5 @@ packages = ["src/ggner_3d"]
 [dependency-groups]
 dev = [
     "ipykernel>=7.1.0",
-    "pytest>=9.0.2",
     "tqdm>=4.67.1",
 ]

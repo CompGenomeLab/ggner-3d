@@ -3,6 +3,8 @@ misc/
 misc_nb/
 figs/
 
+# R
+renv/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

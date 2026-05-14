@@ -4,10 +4,9 @@
 # Set global constants
 BASE_COVARIATES=""
 CRITICAL_COLS=""
-R_SCRIPT="./xpc_ctcf_grid_search_3.R"
+R_SCRIPT="./xpc_ctcf_grid_search.R"
 PROJECT_ROOT="/home/carlos/Clone/ggner-3d"
 FOCAL_KEPT_FRACT=(1.00 0.90 0.80 0.70 0.60 0.50 0.40 0.30 0.20 0.10)
-# FOCAL_KEPT_FRACT=(1.00)
 OUT_FOLDER="1_0_1"
 GRID_WORKERS="${GRID_WORKERS:-0}"
 

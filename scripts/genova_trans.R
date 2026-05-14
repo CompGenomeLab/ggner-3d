@@ -1,3 +1,23 @@
+# This script processes chromosome-level contact information from multiple `.mcool`
+# files using GENOVA. For each sample, a balanced contact map is loaded at 1 Mb
+# resolution, and a chromosome-by-chromosome contact matrix is generated. The
+# observed contact frequencies are then normalized against an expected contact
+# matrix to calculate log2 observed/expected values.
+#
+# The resulting matrices summarize whether contacts between chromosome pairs occur
+# more or less frequently than expected. Positive values indicate contacts enriched
+# relative to expectation, while negative values indicate contacts depleted relative
+# to expectation. The processed matrices are saved for each sample in both RDS
+# format, which preserves the R object structure, and TSV format, which can be
+# inspected or used by other tools.
+#
+# Here, expected values are calculated using the "sums" mode in GENOVA. This uses
+# a chi-squared-style null model, where chromosome-pair expectations are conditional
+# on the total contact sums for individual chromosomes. In other words, given the
+# total number of contacts associated with each chromosome, the expected matrix
+# estimates how many contacts would be expected between each chromosome pair under
+# this chromosome-level null model.
+
 # --- packages ---
 library(GENOVA)
 
@@ -23,8 +43,6 @@ MCOOLS_PATH_DICT <- c(
 )
 
 # --- helper: compute log2(O/E) in the same "proportions of total" framework ---
-# chromosome_matrix() returns obs as counts and exp as proportions-of-total expected :contentReference[oaicite:0]{index=0}
-# For expected="trans", GENOVA zeros the diagonal before computing totals/expected :contentReference[oaicite:1]{index=1}
 chrommat_log2_obsexp <- function(cm, expected_mode = c("bins","sums","trans","cis","regress"),
                                  finite_to_na = TRUE) {
   expected_mode <- match.arg(expected_mode)
@@ -32,13 +50,11 @@ chrommat_log2_obsexp <- function(cm, expected_mode = c("bins","sums","trans","ci
   obs <- cm$obs
   exp <- cm$exp
 
-  # if you passed a single contacts object, these are still 3D arrays with 3rd dim = 1 :contentReference[oaicite:2]{index=2}
   if (length(dim(obs)) == 3L) {
     obs <- obs[,,1, drop = TRUE]
     exp <- exp[,,1, drop = TRUE]
   }
 
-  # compute obs as proportion-of-total (with the same diagonal handling used for "trans" expected) :contentReference[oaicite:3]{index=3}
   tmp <- obs
   if (expected_mode == "trans") diag(tmp) <- 0
   obs_prop <- obs / sum(tmp, na.rm = TRUE)
@@ -50,7 +66,7 @@ chrommat_log2_obsexp <- function(cm, expected_mode = c("bins","sums","trans","ci
 }
 
 # --- run ---
-EXPECTED_MODE <- "sums"   # you used expected="trans" in chromosome_matrix()
+EXPECTED_MODE <- "sums"
 OUTDIR <- paste0("/home/carlos/Clone/ggner-3d/data/genova_trans/log2_obsexp_", EXPECTED_MODE)
 dir.create(OUTDIR, showWarnings = FALSE, recursive = TRUE)
 
@@ -71,18 +87,15 @@ for (s_name in names(MCOOLS_PATH_DICT)) {
 
   log2oe <- chrommat_log2_obsexp(cm, expected_mode = EXPECTED_MODE)
 
-  # store in memory (optional)
   clrs_[[s_name]]     <- clr
   cm_list[[s_name]]   <- cm
   log2oe_list[[s_name]] <- log2oe
 
-  # save as RDS (keeps dimnames clean)
   saveRDS(
     log2oe,
     file = file.path(OUTDIR, paste0(s_name, "_log2_obsexp.rds"))
   )
 
-  # optional: also save as TSV matrix
   write.table(
     log2oe,
     file = file.path(OUTDIR, paste0(s_name, "_log2_obsexp.tsv")),
