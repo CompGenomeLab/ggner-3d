@@ -1,6 +1,6 @@
 # NER and 3D Genome Analysis
 
-This repository contains analysis code for the paper "RNAPII and NER stall loop extrusion at UV lesions, shaping 3D genome during repair".
+This repository contains analysis code for the paper "RNAPII and NER stall loop extrusion at UV lesions, shaping the 3D genome during repair".
 
 All analyses were performed on an Arch Linux system. To facilitate reproducibility of the analyses and manuscript figures, the corresponding code has been deposited primarily as Python-based Jupyter notebooks, with cell outputs preserved, including the generated figures. Additional shell and R scripts used in the analysis are also provided.
 
