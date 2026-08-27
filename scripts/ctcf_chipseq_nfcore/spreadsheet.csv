@@ -1,0 +1,10 @@
+sample,fastq_1,fastq_2,replicate,antibody,control,control_replicate
+WT_NoUV,/cta/users/vkaya/chipseq_work/ctcf/samples/01_0KSN_02TOZurich_Wn1_CTCF-AbFlex_hs_i56-9_r1.fastq.gz,/cta/users/vkaya/chipseq_work/ctcf/samples/01_0KSN_02TOZurich_Wn1_CTCF-AbFlex_hs_i56-9_r2.fastq.gz,1,CTCF,INPUT,1
+WT_NoUV,/cta/users/vkaya/chipseq_work/ctcf/samples/02_0KSO_02TOZurich_Wn2_CTCF-AbFlex_hs_i57-9_r1.fastq.gz,/cta/users/vkaya/chipseq_work/ctcf/samples/02_0KSO_02TOZurich_Wn2_CTCF-AbFlex_hs_i57-9_r2.fastq.gz,2,CTCF,INPUT,1
+WT_3h,/cta/users/vkaya/chipseq_work/ctcf/samples/03_0KSP_02TOZurich_W3h1_CTCF-AbFlex_hs_i59-9_r1.fastq.gz,/cta/users/vkaya/chipseq_work/ctcf/samples/03_0KSP_02TOZurich_W3h1_CTCF-AbFlex_hs_i59-9_r2.fastq.gz,1,CTCF,INPUT,1
+WT_3h,/cta/users/vkaya/chipseq_work/ctcf/samples/04_0KSQ_02TOZurich_W3h2_CTCF-AbFlex_hs_i67-9_r1.fastq.gz,/cta/users/vkaya/chipseq_work/ctcf/samples/04_0KSQ_02TOZurich_W3h2_CTCF-AbFlex_hs_i67-9_r2.fastq.gz,2,CTCF,INPUT,1
+XPCKO_NoUV,/cta/users/vkaya/chipseq_work/ctcf/samples/05_0KSR_02TOZurich_Cn1_CTCF-AbFlex_hs_i68-9_r1.fastq.gz,/cta/users/vkaya/chipseq_work/ctcf/samples/05_0KSR_02TOZurich_Cn1_CTCF-AbFlex_hs_i68-9_r2.fastq.gz,1,CTCF,INPUT,1
+XPCKO_NoUV,/cta/users/vkaya/chipseq_work/ctcf/samples/06_0KSS_02TOZurich_Cn2_CTCF-AbFlex_hs_i69-9_r1.fastq.gz,/cta/users/vkaya/chipseq_work/ctcf/samples/06_0KSS_02TOZurich_Cn2_CTCF-AbFlex_hs_i69-9_r2.fastq.gz,2,CTCF,INPUT,1
+XPCKO_3h,/cta/users/vkaya/chipseq_work/ctcf/samples/07_0KST_02TOZurich_C3h1_CTCF-AbFlex_hs_i70-9_r1.fastq.gz,/cta/users/vkaya/chipseq_work/ctcf/samples/07_0KST_02TOZurich_C3h1_CTCF-AbFlex_hs_i70-9_r2.fastq.gz,1,CTCF,INPUT,1
+XPCKO_3h,/cta/users/vkaya/chipseq_work/ctcf/samples/08_0KSU_02TOZurich_C3h2_CTCF-AbFlex_hs_i71-9_r1.fastq.gz,/cta/users/vkaya/chipseq_work/ctcf/samples/08_0KSU_02TOZurich_C3h2_CTCF-AbFlex_hs_i71-9_r2.fastq.gz,2,CTCF,INPUT,1
+INPUT,/cta/users/vkaya/chipseq_work/ctcf/samples/01_0KSV_02TOZurich_Pooled_Input_hs_i73-9_r1.fastq.gz,/cta/users/vkaya/chipseq_work/ctcf/samples/01_0KSV_02TOZurich_Pooled_Input_hs_i73-9_r2.fastq.gz,1,,,
