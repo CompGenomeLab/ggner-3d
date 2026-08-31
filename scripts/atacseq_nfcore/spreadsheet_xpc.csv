@@ -1,0 +1,5 @@
+sample,fastq_1,fastq_2,replicate,control,control_replicate
+XPC_UV3h,/cta/users/vkaya/atac/XPCKO_3H_1_R1.fastq.gz,/cta/users/vkaya/atac/XPCKO_3H_1_R2.fastq.gz,1,,
+XPC_UV3h,/cta/users/vkaya/atac/XPCKO_3H_2_R1.fastq.gz,/cta/users/vkaya/atac/XPCKO_3H_2_R2.fastq.gz,2,,
+XPC_noUV,/cta/users/vkaya/atac/XPCKO_noUV_1_R1.fastq.gz,/cta/users/vkaya/atac/XPCKO_noUV_1_R2.fastq.gz,1,,
+XPC_noUV,/cta/users/vkaya/atac/XPCKO_noUV_2_R1.fastq.gz,/cta/users/vkaya/atac/XPCKO_noUV_2_R2.fastq.gz,2,,

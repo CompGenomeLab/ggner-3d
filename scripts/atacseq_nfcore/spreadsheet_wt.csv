@@ -1,0 +1,5 @@
+sample,fastq_1,fastq_2,replicate,control,control_replicate
+WT_UV3h,/cta/users/vkaya/atac/SRR23760306_1.fastq.gz,/cta/users/vkaya/atac/SRR23760306_2.fastq.gz,1,,
+WT_UV3h,/cta/users/vkaya/atac/SRR23760305_1.fastq.gz,/cta/users/vkaya/atac/SRR23760305_2.fastq.gz,2,,
+WT_noUV,/cta/users/vkaya/atac/SRR23760308_1.fastq.gz,/cta/users/vkaya/atac/SRR23760308_2.fastq.gz,1,,
+WT_noUV,/cta/users/vkaya/atac/SRR23760307_1.fastq.gz,/cta/users/vkaya/atac/SRR23760307_2.fastq.gz,2,,

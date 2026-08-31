@@ -1,0 +1,14 @@
+sample,fastq_1,fastq_2,replicate,antibody,control,control_replicate
+XPC_WT_noUV,/cta/users/vkaya/chipseq_work/samples/XPC_WT_noUV_IP_Rep1.R1.fastq.gz,,1,XPC,XPC_KO_noUV,1
+XPC_WT_noUV,/cta/users/vkaya/chipseq_work/samples/XPC_WT_noUV_IP_Rep2.R1.fastq.gz,,2,XPC,XPC_KO_noUV,1
+XPC_WT_noUV,/cta/users/vkaya/chipseq_work/samples/XPC_WT_noUV_IP_Rep3.R1.fastq.gz,,3,XPC,XPC_KO_noUV,1
+XPC_WT_noUV,/cta/users/vkaya/chipseq_work/samples/XPC_WT_noUV_IP_Rep4.R1.fastq.gz,,4,XPC,XPC_KO_noUV,1
+XPC_KO_noUV,/cta/users/vkaya/chipseq_work/samples/XPC_XPCKO_noUV_IP.merged.fastq.gz,,1,,,
+XPC_WT_1h,/cta/users/vkaya/chipseq_work/samples/XPC_WT_1h_IP_Rep1.R1.fastq.gz,,1,XPC,XPC_KO_1h,1
+XPC_WT_1h,/cta/users/vkaya/chipseq_work/samples/XPC_WT_1h_IP_Rep2.R1.fastq.gz,,2,XPC,XPC_KO_1h,1
+XPC_WT_1h,/cta/users/vkaya/chipseq_work/samples/XPC_WT_1h_IP_Rep3.R1.fastq.gz,,3,XPC,XPC_KO_1h,1
+XPC_KO_1h,/cta/users/vkaya/chipseq_work/samples/XPC_XPCKO_1h_IP.merged.fastq.gz,,1,,,
+XPC_WT_3h,/cta/users/vkaya/chipseq_work/samples/XPC_WT_3h_IP_Rep1.R1.fastq.gz,,1,XPC,XPC_KO_3h,1
+XPC_WT_3h,/cta/users/vkaya/chipseq_work/samples/XPC_WT_3h_IP_Rep2.R1.fastq.gz,,2,XPC,XPC_KO_3h,1
+XPC_WT_3h,/cta/users/vkaya/chipseq_work/samples/XPC_WT_3h_IP_Rep3.R1.fastq.gz,,3,XPC,XPC_KO_3h,1
+XPC_KO_3h,/cta/users/vkaya/chipseq_work/samples/XPC_XPCKO_3h_IP.merged.fastq.gz,,1,,,
