@@ -1,0 +1,13 @@
+sample,fastq_1,fastq_2,strandedness,seq_platform
+RNA_0_REP1,/cta/users/vkaya/rnaseq/samples/su_rna_0_1_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_0_1_R2.fq.gz,auto,ILLUMINA
+RNA_0_REP2,/cta/users/vkaya/rnaseq/samples/su_rna_0_2_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_0_2_R2.fq.gz,auto,ILLUMINA
+RNA_0_REP3,/cta/users/vkaya/rnaseq/samples/su_rna_0_3_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_0_3_R2.fq.gz,auto,ILLUMINA
+RNA_12_REP1,/cta/users/vkaya/rnaseq/samples/su_rna_12_1_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_12_1_R2.fq.gz,auto,ILLUMINA
+RNA_12_REP2,/cta/users/vkaya/rnaseq/samples/su_rna_12_2_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_12_2_R2.fq.gz,auto,ILLUMINA
+RNA_12_REP3,/cta/users/vkaya/rnaseq/samples/su_rna_12_3_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_12_3_R2.fq.gz,auto,ILLUMINA
+RNA_30_REP1,/cta/users/vkaya/rnaseq/samples/su_rna_30_1_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_30_1_R2.fq.gz,auto,ILLUMINA
+RNA_30_REP2,/cta/users/vkaya/rnaseq/samples/su_rna_30_2_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_30_2_R2.fq.gz,auto,ILLUMINA
+RNA_30_REP3,/cta/users/vkaya/rnaseq/samples/su_rna_30_3_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_30_3_R2.fq.gz,auto,ILLUMINA
+RNA_60_REP1,/cta/users/vkaya/rnaseq/samples/su_rna_60_1_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_60_1_R2.fq.gz,auto,ILLUMINA
+RNA_60_REP2,/cta/users/vkaya/rnaseq/samples/su_rna_60_2_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_60_2_R2.fq.gz,auto,ILLUMINA
+RNA_60_REP3,/cta/users/vkaya/rnaseq/samples/su_rna_60_3_R1.fq.gz,/cta/users/vkaya/rnaseq/samples/su_rna_60_3_R2.fq.gz,auto,ILLUMINA
