@@ -40,6 +40,10 @@ After restoration, the `renv` environment will be loaded automatically whenever 
 - `notebooks/`: Contains Jupyter notebooks for each analysis step, with outputs and figures included.
 - `r_env/`: Contains the R environment and package lockfile for reproducibility.
 - `scripts/`: Contains additional shell and R scripts used in the analysis.
+  - `scripts/atacseq_nfcore/`: Runs the nf-core/atacseq pipeline and generates RPGC-normalized ATAC-seq signal tracks.
+  - `scripts/ctcf_chipseq_nfcore/`: Runs the nf-core/chipseq pipeline for CTCF ChIP-seq and generates normalized signal and input-ratio tracks.
+  - `scripts/rnaseq_nfcore/`: Runs the nf-core/rnaseq pipeline and generates CPM-normalized RNA-seq signal tracks.
+  - `scripts/xpc_chipseq_nfcore/`: Runs the nf-core/chipseq pipeline for XPC ChIP-seq and generates RPGC-normalized signal tracks.
 
 # Todo:
 - Prior to publication, we will reorganize the repository, remove temporary and redundant files, and provide a more detailed overview of its structure, including the purpose of each script and notebook.
